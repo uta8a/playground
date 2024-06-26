@@ -9,9 +9,9 @@ gh api graphql -f query="mutation {
   }) {
     projectV2Field {
       ... on ProjectV2Field {
-       id
-      name
-      dataType 
+        id
+        name
+        dataType 
       }
     }
   }
