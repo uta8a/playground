@@ -4,13 +4,16 @@ import (
 	"archive/zip"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func unzip(f string) {
 	r, _ := zip.OpenReader(f)
 	for _, f := range r.File {
-		p, _ := filepath.Abs(f.Name)
-		// BAD: This could overwrite any file on the file system
-		os.WriteFile(p, []byte("present"), 0666)
+		if !strings.Contains(f.Name, "..") {
+			p, _ := filepath.Abs(f.Name)
+			// GOOD: Check that path does not contain ".." before using it
+			os.WriteFile(p, []byte("present"), 0666)
+		}
 	}
 }
