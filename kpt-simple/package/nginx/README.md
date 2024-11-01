@@ -19,3 +19,5 @@ kpt live init nginx
 kpt live apply nginx --reconcile-timeout=2m --output=table
 ```
 Details: https://kpt.dev/reference/cli/live/
+
+参考: https://zenn.dev/cybozu_neco/articles/kpt-wet-manifests
