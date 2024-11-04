@@ -1,11 +1,14 @@
 package reverse_test
 
 import (
-	"os"
+	"embed"
 	"testing"
 
 	"github.com/uta8a/playground/go-with-bazel/internal/reverse"
 )
+
+//go:embed testdata/*
+var testdata embed.FS
 
 func TestString(t *testing.T) {
 	t.Parallel()
@@ -26,11 +29,11 @@ func TestString(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Setup
-			givenBytes, err := os.ReadFile("testdata/" + tt.name + "_string_input.txt")
+			givenBytes, err := testdata.ReadFile("testdata/" + tt.name + "_string_input.txt")
 			if err != nil {
 				t.Fatal(err)
 			}
-			expectedBytes, err := os.ReadFile("testdata/" + tt.name + "_string_output.txt")
+			expectedBytes, err := testdata.ReadFile("testdata/" + tt.name + "_string_output.txt")
 			if err != nil {
 				t.Fatal(err)
 			}
