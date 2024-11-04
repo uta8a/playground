@@ -1,0 +1,12 @@
+digraph mygraph {
+  node [shape=box];
+  "//apps/hello_world:hello_world"
+  "//apps/hello_world:hello_world" -> "//apps/hello_world:hello_world_lib"
+  "//apps/hello_world:hello_world_lib"
+  "//apps/hello_world:hello_world_lib" -> "//apps/hello_world:main.go"
+  "//apps/hello_world:hello_world_lib" -> "@com_github_google_uuid//:uuid"
+  "@com_github_google_uuid//:uuid"
+  "@com_github_google_uuid//:uuid" -> "@com_github_google_uuid//:time.go\n@com_github_google_uuid//:hash.go\n@com_github_google_uuid//:version1.go\n@com_github_google_uuid//:doc.go\n@com_github_google_uuid//:util.go\n@com_github_google_uuid//:version6.go\n@com_github_google_uuid//:node_net.go\n@com_github_google_uuid//:marshal.go\n@com_github_google_uuid//:node.go\n@com_github_google_uuid//:node_js.go\n@com_github_google_uuid//:dce.go\n@com_github_google_uuid//:sql.go\n@com_github_google_uuid//:uuid.go\n...and 3 more items"
+  "@com_github_google_uuid//:time.go\n@com_github_google_uuid//:hash.go\n@com_github_google_uuid//:version1.go\n@com_github_google_uuid//:doc.go\n@com_github_google_uuid//:util.go\n@com_github_google_uuid//:version6.go\n@com_github_google_uuid//:node_net.go\n@com_github_google_uuid//:marshal.go\n@com_github_google_uuid//:node.go\n@com_github_google_uuid//:node_js.go\n@com_github_google_uuid//:dce.go\n@com_github_google_uuid//:sql.go\n@com_github_google_uuid//:uuid.go\n...and 3 more items"
+  "//apps/hello_world:main.go"
+}
