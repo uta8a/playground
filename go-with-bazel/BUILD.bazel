@@ -1,0 +1,15 @@
+load("@gazelle//:def.bzl", "gazelle")
+
+# gazelle:prefix github.com/uta8a/playground/go-with-bazel
+gazelle(name = "gazelle")
+
+gazelle(
+    name = "update-go-repos",
+    args = [
+        "-from_file=go.mod",
+        "-to_macro=deps.bzl%go_repos",
+        "-bzlmod",
+        "-prune",
+    ],
+    command = "update-repos",
+)
