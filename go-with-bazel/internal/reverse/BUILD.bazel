@@ -1,8 +1,16 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "reverse",
     srcs = ["string.go"],
     importpath = "github.com/uta8a/playground/go-with-bazel/internal/reverse",
     visibility = ["//:__subpackages__"],
+)
+
+go_test(
+    name = "reverse_test",
+    size = "small",
+    srcs = ["string_test.go"],
+    data = glob(["testdata/**"]),
+    deps = [":reverse"],
 )
