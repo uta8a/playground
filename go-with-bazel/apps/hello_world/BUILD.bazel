@@ -74,9 +74,8 @@ pkg_tar(
 # コンテナイメージをビルドする
 oci_image(
     name = "image_amd64",
-    architecture = "amd64",
+    base = "@distroless_static_debian12_linux_amd64",
     entrypoint = ["/hello_world_linux_amd64"],
-    os = "linux",
     # イメージに追加するtarを指定する
     tars = [":pkg"],
 )
