@@ -1,0 +1,8 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "windows",
+    srcs = ["windows.go"],
+    importpath = "github.com/uta8a/playground/go-with-bazel/internal/windows",
+    visibility = ["//:__subpackages__"],
+)

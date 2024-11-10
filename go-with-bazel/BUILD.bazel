@@ -1,0 +1,33 @@
+load("@gazelle//:def.bzl", "gazelle")
+load("@rules_go//go:def.bzl", "TOOLS_NOGO", "go_library", "nogo")
+
+# gazelle:prefix github.com/uta8a/playground/go-with-bazel
+gazelle(name = "gazelle")
+
+gazelle(
+    name = "update-go-repos",
+    args = [
+        "-from_file=go.mod",
+        "-to_macro=deps.bzl%go_repos",
+        "-bzlmod",
+        "-prune",
+    ],
+    command = "update-repos",
+)
+
+nogo(
+    name = "my_nogo",
+    visibility = ["//visibility:public"],
+    deps = TOOLS_NOGO + [
+        "//analyzers/sample",
+        "@com_github_gostaticanalysis_nilerr//:nilerr",
+    ],
+)
+
+go_library(
+    name = "go-with-bazel",
+    srcs = ["tools.go"],
+    importpath = "github.com/uta8a/playground/go-with-bazel",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_gostaticanalysis_nilerr//:nilerr"],
+)
