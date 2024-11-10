@@ -1,4 +1,25 @@
-load("@rules_go//go:def.bzl", "go_binary", "go_library")
+load("@rules_go//go:def.bzl", "go_binary", "go_cross_binary", "go_library")
+
+go_library(
+    name = "hello_world_lib",
+    srcs = [
+        "main.go",
+        "os_darwin.go",
+        "os_linux.go",
+        "os_windows.go",
+    ],
+    importpath = "github.com/uta8a/playground/go-with-bazel/apps/hello_world",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//internal/reverse",
+        "@com_github_google_uuid//:uuid",
+    ] + select({
+        "@rules_go//go/platform:windows": [
+            "//internal/windows",
+        ],
+        "//conditions:default": [],
+    }),
+)
 
 go_binary(
     name = "hello_world",
@@ -6,13 +27,38 @@ go_binary(
     visibility = ["//visibility:public"],
 )
 
-go_library(
-    name = "hello_world_lib",
-    srcs = ["main.go"],
-    importpath = "github.com/uta8a/playground/go-with-bazel/apps/hello_world",
-    visibility = ["//visibility:private"],
-    deps = [
-        "//internal/reverse",
-        "@com_github_google_uuid//:uuid",
-    ],
+go_cross_binary(
+    name = "hello_world_linux_amd64",
+    platform = "@rules_go//go/toolchain:linux_amd64",
+    target = ":hello_world",
+)
+
+go_cross_binary(
+    name = "hello_world_linux_arm64",
+    platform = "@rules_go//go/toolchain:linux_arm64",
+    target = ":hello_world",
+)
+
+go_cross_binary(
+    name = "hello_world_darwin_amd64",
+    platform = "@rules_go//go/toolchain:darwin_amd64",
+    target = ":hello_world",
+)
+
+go_cross_binary(
+    name = "hello_world_darwin_arm64",
+    platform = "@rules_go//go/toolchain:darwin_arm64",
+    target = ":hello_world",
+)
+
+go_cross_binary(
+    name = "hello_world_windows_amd64",
+    platform = "@rules_go//go/toolchain:windows_amd64",
+    target = ":hello_world",
+)
+
+go_cross_binary(
+    name = "hello_world_windows_arm64",
+    platform = "@rules_go//go/toolchain:windows_arm64",
+    target = ":hello_world",
 )
