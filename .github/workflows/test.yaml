@@ -1,0 +1,9 @@
+name: Sample workflow
+on: [push]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: 1min
+              run: sleep 60
