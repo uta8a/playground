@@ -1,4 +1,4 @@
-name: test diagram
+name: test action
 on:
   pull_request:
   workflow_dispatch:
