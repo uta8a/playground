@@ -202,14 +202,24 @@ endsolid 3DGraph
 
 ```geojson
 {
-    "type": "Feature",
-    "geometry": {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 1,
+      "geometry": {
         "type": "Point",
-        "coordinates": [-122.126986, 47.639754]
-    },
-    "properties": {
+        "coordinates": [
+          -122.126986,
+          47.639754
+        ]
+      },
+      "properties": {
+        "ID": 0,
         "subType": "Circle",
         "radius": 100
+      }
     }
+  ]
 }
 ```
