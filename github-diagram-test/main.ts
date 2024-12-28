@@ -1,6 +1,8 @@
 // ...existing code...
 
-function generateGeoJSON(t: number) {
+type hour = number;
+
+function generateGeoJSON(t: hour) {
     const distance = 60 * t; // distance in km
     const startX = 139.7673068;
     const startY = 35.6809591;
@@ -41,7 +43,7 @@ function generateGeoJSON(t: number) {
 }
 
 // Example usage
-const t = 10; // Example input
+const t = 6; // Example input
 console.log(JSON.stringify(generateGeoJSON(t), null, 2));
 
 // ...existing code...
