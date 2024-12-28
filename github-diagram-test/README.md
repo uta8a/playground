@@ -208,16 +208,15 @@ endsolid 3DGraph
       "type": "Feature",
       "id": 1,
       "geometry": {
-        "type": "Point",
+        "type": "LineString",
         "coordinates": [
-          -122.126986,
-          47.639754
+            [
+                35.6809591, 139.7673068
+            ],
+            [
+                60.0, 60.0
+            ]
         ]
-      },
-      "properties": {
-        "ID": 0,
-        "subType": "Circle",
-        "radius": 100
       }
     }
   ]
