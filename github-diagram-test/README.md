@@ -211,7 +211,7 @@ endsolid 3DGraph
         "type": "LineString",
         "coordinates": [
             [
-                -35.6809591, 139.7673068
+                 139.7673068, 35.6809591
             ],
             [
                 60.0, 60.0
