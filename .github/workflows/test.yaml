@@ -6,6 +6,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - run: sleep 60
       - uses: uta8a/tokyo-to-osaka-action@latest
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
