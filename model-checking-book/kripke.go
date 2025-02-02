@@ -117,3 +117,38 @@ func stepGlobal(wld world) ([]world, error) {
 
 	return wlds, nil
 }
+
+func KripkeModel(sys system) (kripkeModel, error) {
+	init := initialWorld(sys)
+
+	visited := worlds{}
+	visited.insert(init)
+	accs := map[worldID][]worldID{}
+
+	stack := []world{init}
+	for len(stack) > 0 {
+		current := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+
+		acc := []worldID{}
+		nexts, err := stepGlobal(current)
+		if err != nil {
+			return kripkeModel{}, err
+		}
+		for _, next := range nexts {
+			acc = append(acc, next.id)
+
+			if !visited.member(next) {
+				visited.insert(next)
+				stack = append(stack, next)
+			}
+		}
+		accs[current.id] = acc
+	}
+
+	return kripkeModel{
+		worlds:     visited,
+		initial:    init.id,
+		accessible: accs,
+	}, nil
+}
