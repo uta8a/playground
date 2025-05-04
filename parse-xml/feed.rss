@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:slash="http://purl.org/rss/1.0/modules/slash/" xmlns:webfeeds="http://webfeeds.org/rss/1.0" version="2.0">
+  <channel>
+    <title>diaryです</title>
+    <link>https://blog.uta8a.net/</link>
+    <atom:link href="https://blog.uta8a.net/feed.rss" rel="self" type="application/rss+xml"/>
+    <description>uta8aのブログ記事たち</description>
+    <lastBuildDate>Sat, 03 May 2025 23:16:30 GMT</lastBuildDate>
+    <language>ja</language>
+    <generator>Lume v2.5.3</generator>
+    <item>
+      <title>traPのブログ4月分読んだ</title>
+      <link>https://blog.uta8a.net/diary/2025-05-04-trap-blog.html</link>
+      <guid isPermaLink="false">https://blog.uta8a.net/diary/2025-05-04-trap-blog.html</guid>
+      <description>traP応援してます</description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <pubDate>Sat, 03 May 2025 22:54:18 GMT</pubDate>
+      <atom:updated>2025-05-03T22:54:18.856Z</atom:updated>
+    </item>
+    <item>
+      <title>Perfume Costume Museumに行ってきた</title>
+      <link>https://blog.uta8a.net/diary/2025-04-29-perfume-costume-museum.html</link>
+      <guid isPermaLink="false">https://blog.uta8a.net/diary/2025-04-29-perfume-costume-museum.html</guid>
+      <description>とってもよかったです</description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <pubDate>Tue, 29 Apr 2025 09:08:08 GMT</pubDate>
+      <atom:updated>2025-04-29T09:08:08.360Z</atom:updated>
+    </item>
+    <item>
+      <title>感想文: つくって、壊して、直して学ぶ Kubernetes入門</title>
+      <link>https://blog.uta8a.net/post/2025-04-28-k8s-book.html</link>
+      <guid isPermaLink="false">https://blog.uta8a.net/post/2025-04-28-k8s-book.html</guid>
+      <description>手を動かしながら学べる良い本でした</description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <pubDate>Mon, 28 Apr 2025 13:42:20 GMT</pubDate>
+      <atom:updated>2025-04-28T13:42:20.536Z</atom:updated>
+    </item>
+    <item>
+      <title>行動に集中する</title>
+      <link>https://blog.uta8a.net/diary/2025-04-26-loopback.html</link>
+      <guid isPermaLink="false">https://blog.uta8a.net/diary/2025-04-26-loopback.html</guid>
+      <description>最近意識していること</description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <pubDate>Fri, 25 Apr 2025 15:06:38 GMT</pubDate>
+      <atom:updated>2025-04-25T15:19:39.228Z</atom:updated>
+    </item>
+    <item>
+      <title>Gitless GitOpsをFluxでやってみる</title>
+      <link>https://blog.uta8a.net/post/2025-04-19-flux-first-step.html</link>
+      <guid isPermaLink="false">https://blog.uta8a.net/post/2025-04-19-flux-first-step.html</guid>
+      <description>OCI Repositoryにmanifestを置いて、kindでfluxを動かす</description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <pubDate>Fri, 18 Apr 2025 23:57:37 GMT</pubDate>
+      <atom:updated>2025-04-18T23:57:37.184Z</atom:updated>
+    </item>
+    <item>
+      <title>社会人3年目になった</title>
+      <link>https://blog.uta8a.net/diary/2025-04-01-lookback.html</link>
+      <guid isPermaLink="false">https://blog.uta8a.net/diary/2025-04-01-lookback.html</guid>
+      <description>いろいろ振り返る</description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <pubDate>Mon, 31 Mar 2025 23:03:43 GMT</pubDate>
+      <atom:updated>2025-03-31T23:03:43.345Z</atom:updated>
+    </item>
+    <item>
+      <title>インドカレーを作った(失敗)</title>
+      <link>https://blog.uta8a.net/diary/2025-01-12-indian-curry.html</link>
+      <guid isPermaLink="false">https://blog.uta8a.net/diary/2025-01-12-indian-curry.html</guid>
+      <description>インドカレーを作りましたが、スパイススープになりました</description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <pubDate>Sun, 12 Jan 2025 04:31:20 GMT</pubDate>
+      <atom:updated>2025-01-12T04:31:20.000Z</atom:updated>
+    </item>
+    <item>
+      <title>2025年の抱負</title>
+      <link>https://blog.uta8a.net/diary/2025-01-01-goal.html</link>
+      <guid isPermaLink="false">https://blog.uta8a.net/diary/2025-01-01-goal.html</guid>
+      <description>今年のテーマは縦横無尽</description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <pubDate>Tue, 31 Dec 2024 23:10:08 GMT</pubDate>
+      <atom:updated>2024-12-31T23:10:08.000Z</atom:updated>
+    </item>
+    <item>
+      <title>すみません、年の瀬なのですが良かったのでASMRの話をさせてください</title>
+      <link>https://blog.uta8a.net/diary/2024-12-30-thankyouasmr.html</link>
+      <guid isPermaLink="false">https://blog.uta8a.net/diary/2024-12-30-thankyouasmr.html</guid>
+      <description>浅見ゆいさんのビジュアルボイスブックを買いました</description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <pubDate>Mon, 30 Dec 2024 12:30:32 GMT</pubDate>
+      <atom:updated>2024-12-30T12:30:32.000Z</atom:updated>
+    </item>
+    <item>
+      <title>2024年振り返り</title>
+      <link>https://blog.uta8a.net/diary/2024-12-30-recap-2024.html</link>
+      <guid isPermaLink="false">https://blog.uta8a.net/diary/2024-12-30-recap-2024.html</guid>
+      <description>動けた時間は少なかったけれど、その時間は楽しく過ごせた年でした</description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <pubDate>Mon, 30 Dec 2024 11:53:07 GMT</pubDate>
+      <atom:updated>2024-12-30T11:53:07.000Z</atom:updated>
+    </item>
+  </channel>
+</rss>
