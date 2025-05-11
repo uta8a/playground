@@ -1,0 +1,9 @@
+{
+    "type": "module",
+    "scripts": {
+        "dev": "node --experimental-strip-types --experimental-transform-types --experimental-detect-module --no-warnings=ExperimentalWarning index.ts"
+    },
+    "dependencies": {
+        "ollama": "^0.5.15"
+    }
+}

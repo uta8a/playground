@@ -1,0 +1,11 @@
+services:
+  ollama:
+    image: docker.io/ollama/ollama:latest
+    restart: unless-stopped
+    tty: true
+    ports:
+      - 11434:11434
+    volumes:
+      - ./working:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
