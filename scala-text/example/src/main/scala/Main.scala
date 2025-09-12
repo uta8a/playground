@@ -1,3 +1,15 @@
+def firstLastSame[T](l: List[T]): Boolean = {
+  l.head == l.last
+}
+
+def printfirstLastSame1000Times(): Unit = {
+  for (i <- 1 to 1000) {
+    val head = new scala.util.Random(new java.security.SecureRandom()).alphanumeric.take(5).toList
+    head match {
+      case List(a,b,c,d,e) => println(s"$a$b$c$d$a")
+    }
+  }
+}
 var age: Int = 5
 var isSchoolStarted: Boolean = false
 
@@ -16,7 +28,5 @@ object User {
 }
 
 @main def hello(): Unit =
-  println("Hello world!")
-  println(msg)
-
-def msg = "I was compiled by Scala 3. :)"
+  isChild(age, isSchoolStarted)
+  printfirstLastSame1000Times()
