@@ -1,3 +1,14 @@
+var age: Int = 5
+var isSchoolStarted: Boolean = false
+
+def isChild(age: Int, isSchoolStarted: Boolean): Unit = {
+  if ((1 <= age && age <= 6) && !isSchoolStarted) {
+    println("幼児です")
+  } else {
+    println("幼児ではありません")
+  }
+}
+
 class User(val name: String, val age: Int)
 
 object User {
