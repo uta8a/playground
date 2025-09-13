@@ -1,9 +1,12 @@
-trait Greeter:
-  def greet(name: String): String
+trait Logger(prefix: String):
+  // 本体が「トレイトの初期化コード」= コンストラクタに相当
+  def log(msg: String): Unit =
+    println(s"$prefix$msg")
 
-val g = new Greeter:
-  def greet(name: String) = s"Hello, $name"
+class Service extends Logger("SVC: "):
+  def work(): Unit = log("doing work")
 
-@main def run(): Unit =
-  println(g.greet("world"))
+@main def demo(): Unit =
+  new Service().work()
+// => SVC: doing work
 
