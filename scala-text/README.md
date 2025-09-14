@@ -1,0 +1,4 @@
+# Requirements
+
+- mise
+- placed vimrc
