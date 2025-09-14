@@ -8,6 +8,10 @@ lazy val root = project
 
     scalaVersion := scala3Version,
 
-    libraryDependencies += "org.scalameta" %% "munit" % "1.0.0" % Test
+    libraryDependencies ++= Seq(
+      "org.scalameta" %% "munit" % "1.0.0" % Test,
+      "org.scalatest" %% "scalatest-flatspec" % "3.2.19" % "test",
+      "org.scalatest" %% "scalatest-diagrams" % "3.2.19" % "test",
+    )
   )
 scalacOptions ++= Seq("-deprecation", "-feature", "-unchecked")
