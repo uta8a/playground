@@ -1,0 +1,7 @@
+[package]
+name = "try-ts-rs"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ts-rs = "11.0"

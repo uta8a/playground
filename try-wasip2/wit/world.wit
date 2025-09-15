@@ -1,0 +1,19 @@
+/// 先頭は必ずpackageセクション
+/// <ベンダープレフィックス>:<パッケージ名>@<SemVer>で記述
+package anonymous:greeting@0.0.1;
+
+/// インターフェース定義
+/// wit内に少なくとも一つは必要（だったはず）
+interface say {
+    /// コンポーネントで定義する関数
+    /// <関数名>: func(<引数>, ...) -> <戻り値>
+    hello: func() -> string;
+}
+
+/// インターフェース定義の親玉
+/// ここが全ての起点となる
+world greeting {
+    /// sayインターフェースのexport宣言
+    /// 別のwasmから呼べるようになる
+    export say;
+}
