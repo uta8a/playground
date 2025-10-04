@@ -1,0 +1,10 @@
+name = "taut"
+version = "0.1.0"
+defaultTargets = ["taut"]
+
+[[lean_lib]]
+name = "Taut"
+
+[[lean_exe]]
+name = "taut"
+root = "Main"
