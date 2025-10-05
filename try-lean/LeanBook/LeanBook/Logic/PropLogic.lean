@@ -39,3 +39,16 @@ example (P Q : Prop) : ¬(P ∨ Q) ↔¬P∧¬Q := by
       | inr hq' =>
         apply hq
         exact hq'
+
+/-- A and (A or B) equivalence A 現代論理学 p11 9) 連言の吸収律 -/
+example (A B : Prop) : A ∧ (A ∨ B) ↔ A := by
+  constructor -- 2方向に分解
+  · intro h -- h : A ∧ (A ∨ B)
+    cases h with -- かつ はcasesで分解
+    | intro ha hab => -- ha : A, hab : A ∨ B
+      exact ha -- ha : A を使う
+  · intro ha -- ha : A
+    constructor -- かつ を作る
+    · exact ha -- ha : A を使うと左側が示せる
+    · left -- A ∨ B の左側を示す
+      exact ha -- ha : A を使う
