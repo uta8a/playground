@@ -9,3 +9,6 @@ rm -f key.txt
 age-keygen -o key.txt
 SOPS_AGE_RECIPIENTS="$(grep '^# public key:' key.txt | awk '{print $4}')" sops --encrypt test.json > test.json.enc
 """
+
+[env]
+_.file = {path = "env.json", redact = true}
