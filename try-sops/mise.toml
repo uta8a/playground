@@ -1,0 +1,10 @@
+[tools]
+age = "1.3.1"
+sops = "3.11.0"
+
+[tasks.init-encrypt]
+run = """
+rm -f key.txt
+age-keygen -o key.txt
+SOPS_AGE_RECIPIENTS="$(grep '^# public key:' key.txt | awk '{print $4}')" sops --encrypt test.json > test.json.enc
+"""
