@@ -3,7 +3,7 @@
 ## 前提
 
 ```bash
-cd /home/uta8a/ghq/github.com/uta8a/playground/try-sops
+cd <path-to-playground>/try-sops
 export SOPS_AGE_KEY_FILE=./key.txt # これが大事。復号時にageのsecret keyが必要。
 ```
 
