@@ -1,0 +1,27 @@
+{
+    "name": "java26-corretto-trixie",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "remoteUser": "vscode",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "vscjava.vscode-java-pack",
+                "redhat.vscode-xml",
+                "ms-azuretools.vscode-docker",
+                "eamodio.gitlens"
+            ],
+            "settings": {
+                "java.jdt.ls.java.home": "/usr/lib/jvm/java-26-amazon-corretto",
+                "terminal.integrated.defaultProfile.linux": "bash"
+            }
+        }
+    },
+    "containerEnv": {
+        "JAVA_HOME": "/usr/lib/jvm/java-26-amazon-corretto"
+    },
+    "postCreateCommand": "java -version",
+    "features": {}
+}
