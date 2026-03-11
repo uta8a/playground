@@ -4,6 +4,7 @@
 package org.example.app;
 
 import org.example.list.LinkedList;
+import java.nio.file.Path;
 
 import static org.example.utilities.StringUtils.join;
 import static org.example.utilities.StringUtils.split;
@@ -16,6 +17,8 @@ public class App {
         LinkedList tokens;
         tokens = split(getMessage());
         String result = join(tokens);
+        Path output = Path.of("build", "output.txt");
+        System.out.println(output);
         System.out.println(WordUtils.capitalize(result));
     }
 }

@@ -18,3 +18,4 @@ plugins {
 
 rootProject.name = "codemod"
 include("app", "list", "utilities")
+include("paths-get-to-path-of")

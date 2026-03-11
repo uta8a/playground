@@ -6,11 +6,20 @@
 
 plugins {
     id("buildlogic.java-application-conventions")
+    id("org.openrewrite.rewrite") version "latest.release"
 }
 
 dependencies {
     implementation("org.apache.commons:commons-text")
     implementation(project(":utilities"))
+
+    rewrite(project(":paths-get-to-path-of"))
+}
+
+rewrite {
+    activeRecipe("com.yourorg.java.migrate.PathsGetToPathOf")
+    exclusion("**/*.gradle.kts")
+    exclusion("**/build/**")
 }
 
 application {
