@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "CDK Diff Review",
+  "description": "Review infrastructure change impact after CDK edits",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "bin/**/*.ts",
+      "lib/**/*.ts",
+      "**/*Stack.ts",
+      "**/*Construct.ts"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "CDK code has changed. Please:\n1. Run 'cdk synth'\n2. Run 'cdk diff' if possible\n3. Summarize which resources will be added, updated, replaced, or deleted\n4. Highlight any risky replacements such as DynamoDB tables, buckets, distributions, or stateful resources\n5. Explain whether the diff looks intentional based on the changed code\n6. Point out any surprising resource churn or logical ID instability"
+  }
+}

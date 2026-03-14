@@ -1,0 +1,32 @@
+{
+    "name": "debian-trixie-kiro-cli-mise",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "..",
+        "args": {
+            "USERNAME": "vscode",
+            "USER_UID": "1000",
+            "USER_GID": "1000"
+        }
+    },
+    "remoteUser": "vscode",
+    "overrideCommand": false,
+    "init": true,
+    "containerEnv": {
+        "LANG": "en_US.UTF-8",
+        "LC_ALL": "en_US.UTF-8"
+    },
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash"
+            },
+            "extensions": [
+                "ms-vscode-remote.remote-containers"
+            ]
+        }
+    },
+    "postCreateCommand": "bash -lc 'kiro-cli --version || true; mise --version || true'",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
+}
