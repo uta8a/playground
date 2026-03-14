@@ -1,0 +1,7 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.yourorg.java.migrate.PathsGetToPathOf
+displayName: Replace Paths.get with Path.of
+description: Replace java.nio.file.Paths.get(..) with java.nio.file.Path.of(..).
+recipeList:
+  - org.openrewrite.java.migrate.nio.file.PathsGetToPathOf
