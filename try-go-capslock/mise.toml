@@ -1,0 +1,3 @@
+[tools]
+go = "1.26.0"
+"go:github.com/google/capslock/cmd/capslock" = "0.3.1"
