@@ -1,0 +1,18 @@
+{
+    "enabled": true,
+    "name": "CDK Naming and Tagging Check",
+    "description": "Ensure naming and tagging conventions are followed",
+    "version": "1",
+    "when": {
+        "type": "fileEdited",
+        "patterns": [
+            "lib/**/*.ts",
+            "**/*Stack.ts",
+            "**/*Construct.ts"
+        ]
+    },
+    "then": {
+        "type": "askAgent",
+        "prompt": "CDK code was updated. Please review naming and tagging conventions:\n1. Check resource names are consistent and readable\n2. Check stack, construct, and id naming for clarity\n3. Check required tags are present and applied consistently\n4. Identify names that are too generic, unstable, or environment-ambiguous\n5. Suggest minimal changes to align with repository conventions"
+    }
+}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TODO App</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 16px; }
+    input { padding: 8px; width: 70%; }
+    button { padding: 8px 16px; cursor: pointer; }
+    ul { list-style: none; padding: 0; }
+    li { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #eee; }
+    li.done span { text-decoration: line-through; color: #999; }
+    li span { flex: 1; }
+  </style>
+</head>
+<body>
+  <h1>TODO</h1>
+  <form id="form">
+    <input id="input" placeholder="新しいTODO" required>
+    <button type="submit">追加</button>
+  </form>
+  <ul id="list"></ul>
+
+  <script>
+    let API = "";
+
+    async function loadConfig() {
+      const r = await fetch("/config.json");
+      const c = await r.json();
+      API = c.apiUrl.replace(/\/$/, "");
+    }
+
+    async function fetchTodos() {
+      const r = await fetch(`${API}/todos`);
+      return r.json();
+    }
+
+    async function render() {
+      const todos = await fetchTodos();
+      const ul = document.getElementById("list");
+      ul.innerHTML = "";
+      todos.sort((a, b) => a.createdAt.localeCompare(b.createdAt)).forEach(t => {
+        const li = document.createElement("li");
+        if (t.completed) li.className = "done";
+        li.innerHTML = `
+          <input type="checkbox" ${t.completed ? "checked" : ""} onchange="toggle('${t.id}', this.checked)">
+          <span>${t.title}</span>
+          <button onclick="del('${t.id}')">削除</button>`;
+        ul.appendChild(li);
+      });
+    }
+
+    async function toggle(id, completed) {
+      await fetch(`${API}/todos/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completed }),
+      });
+      render();
+    }
+
+    async function del(id) {
+      await fetch(`${API}/todos/${id}`, { method: "DELETE" });
+      render();
+    }
+
+    document.getElementById("form").onsubmit = async (e) => {
+      e.preventDefault();
+      const input = document.getElementById("input");
+      await fetch(`${API}/todos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: input.value }),
+      });
+      input.value = "";
+      render();
+    };
+
+    loadConfig().then(render);
+  </script>
+</body>
+</html>
