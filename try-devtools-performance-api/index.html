@@ -6,5 +6,27 @@
   </head>
   <body>
     <img src="/sample.png" alt="湖越しに見える富士山">
+    <script type="module">
+      // 'hoge'はマークの名前。fetch開始直前の時点を記録します。
+      performance.mark('hoge');
+
+      try {
+        const response = await fetch('/foo');
+        if (!response.ok) {
+          throw new Error(`GET /foo failed: ${response.status}`);
+        }
+        const data = await response.json();
+
+        // レスポンス本文の受信とJSON解析まで完了した時点を記録します。
+        performance.mark('foo-end');
+        const measure = performance.measure('foo-fetch', 'hoge', 'foo-end');
+
+        console.log('/foo response:', data);
+        console.log('hoge:', performance.getEntriesByName('hoge', 'mark')[0].toJSON());
+        console.log('foo-fetch (ms):', measure.duration);
+      } catch (error) {
+        console.error('/foo request failed:', error);
+      }
+    </script>
   </body>
 </html>

@@ -8,6 +8,7 @@ const html = readFileSync(new URL('./index.html', import.meta.url), 'utf8');
 const app = new Hono();
 
 app.get('/', (c) => c.html(html));
+app.get('/foo', (c) => c.json({ message: 'Hello from /foo' }));
 app.get('/sample.png', serveStatic({
   path: fileURLToPath(new URL('./sample.png', import.meta.url)),
 }));

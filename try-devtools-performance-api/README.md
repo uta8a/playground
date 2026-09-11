@@ -1,7 +1,8 @@
 # try-devtools-performance-api
 
 Honoで画像付きのHTMLを配信する、ローカル用の最小サンプルです。
-HTMLのimgタグから `sample.png` を読み込みます。JavaScriptやCSSはありません。
+HTMLのimgタグから `sample.png` を読み込み、インラインJavaScriptから
+`fetch('/foo')` でJSON APIを呼び出します。
 
 ## 起動
 
@@ -34,6 +35,37 @@ performance.getEntriesByType('resource')
   .map((entry) => entry.toJSON())
 ```
 
+## fetchとperformance.mark
+
+ページを開くたびに `GET /foo` を1回呼び出します。Honoは
+`{ "message": "Hello from /foo" }` をJSONで返し、結果をConsoleに表示します。
+
+`performance.mark('hoge')` は `hoge` という名前で時点を記録します。
+名前は文字列なので引用符を付けます。`startTime` はページの時間原点からの
+経過時間（ミリ秒）で、マーク自体の `duration` は0です。
+
+HTML内では次の順序で計測します。
+
+1. `performance.mark('hoge')` でfetch開始直前を記録
+2. `fetch('/foo')` と `response.json()` で本文の受信・JSON解析を完了
+3. `performance.mark('foo-end')` で終了時点を記録
+4. `performance.measure('foo-fetch', 'hoge', 'foo-end')` で2点間の経過時間を記録
+
+`foo-fetch` はサーバーの処理時間だけではなく、通信とJSON解析などを含む時間です。
+リクエストに失敗した場合はConsoleにエラーを表示し、成功時の終了マークとmeasureは作成しません。
+
+Consoleでマーク・計測結果・fetchのResource Timingを確認できます。
+
+```js
+performance.getEntriesByType('mark').map((entry) => entry.toJSON())
+performance.getEntriesByName('foo-fetch', 'measure').map((entry) => entry.toJSON())
+performance.getEntriesByType('resource')
+  .filter((entry) => entry.initiatorType === 'fetch')
+  .map((entry) => entry.toJSON())
+```
+
 ## 参考
 
 - [HonoのNode.js向けドキュメント](https://hono.dev/docs/getting-started/nodejs)
+- [MDN: performance.mark()](https://developer.mozilla.org/en-US/docs/Web/API/Performance/mark)
+- [MDN: performance.measure()](https://developer.mozilla.org/en-US/docs/Web/API/Performance/measure)
