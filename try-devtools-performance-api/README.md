@@ -69,3 +69,23 @@ performance.getEntriesByType('resource')
 - [HonoのNode.js向けドキュメント](https://hono.dev/docs/getting-started/nodejs)
 - [MDN: performance.mark()](https://developer.mozilla.org/en-US/docs/Web/API/Performance/mark)
 - [MDN: performance.measure()](https://developer.mozilla.org/en-US/docs/Web/API/Performance/measure)
+
+---
+
+# 試したログ
+
+`fetch` と `performance.mark()` も試してみた
+
+```
+performance.mark("A")
+// 処理
+performance.mark("B")
+const c = performance.measure("measure-name", "A", "B")
+
+console.log(c.duration)
+```
+
+開始・終了みたいなのだけでなく、markを打っておいてmark間の差分を出すみたいなことができるっぽい。なるほどね。
+あと、performanceはglobal objectなので、tryの前に打ってtry内で終了をmarkするということが可能。
+
+APIもresource typeに当たる。markはmark typeに当たる。

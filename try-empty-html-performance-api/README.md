@@ -28,3 +28,18 @@ performance.getEntriesByType('navigation')[0].toJSON()
 ## 参考
 
 - [HonoのNode.js向けドキュメント](https://hono.dev/docs/getting-started/nodejs)
+
+---
+
+# 計測結果
+
+- やったこと
+  - `performance.getEntries()` の中身を見た
+    - 色々あったので、name, type, startTime, durationを抜き出してみた
+- わかったこと
+  - typeを中心に見ていく。nameが識別子っぽく見えるがtypeをまず見た方がいい
+  - 今回出てたtypeはnavigationとvisibility-stateの2つ。
+    - navigationは読み込まれる時
+    - visibility-stateは、例えば他のタブに行ったときにhiddenになる。今回は別タブに行っていたのでhiddenが記録されていた。
+- 次やること
+  - 別ディレクトリで、imgとか色々追加したものを作ってみる
