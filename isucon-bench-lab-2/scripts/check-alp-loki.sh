@@ -9,6 +9,7 @@ result_dir="results/$run_id"
 source_log="$result_dir/access.log"
 loki_port="${LOKI_PORT:-3101}"
 range_seconds="${LOKI_RANGE_SECONDS:-600}"
+wait_seconds="${LOKI_WAIT_SECONDS:-60}"
 temp_dir="$(mktemp -d)"
 failures=0
 
@@ -46,9 +47,29 @@ check_value() {
 echo "Comparing alp CSV with Grafana/Loki metric queries for run: $run_id"
 echo "Loki range window: ${range_seconds}s"
 
+source_records="$(wc -l < "$source_log" | tr -d ' ')"
+run_selector="{service_name=\"nginx\"} | json | benchmark_run_id=\"${run_id}\""
+all_count_query="sum(count_over_time(${run_selector} [${range_seconds}s]))"
+deadline=$(( $(date +%s) + wait_seconds ))
+
+while :; do
+  loki_records="$(query_scalar "$all_count_query")"
+  if awk -v expected="$source_records" -v actual="$loki_records" 'BEGIN { exit !(expected == actual) }'; then
+    echo "Loki has all ${source_records} records."
+    break
+  fi
+  if (( $(date +%s) >= deadline )); then
+    echo "Loki has ${loki_records}/${source_records} records after ${wait_seconds}s; collector has not caught up." >&2
+    echo "Retry with LOKI_WAIT_SECONDS=180 or inspect: docker compose logs otel-agent" >&2
+    exit 1
+  fi
+  echo "Waiting for Loki: ${loki_records}/${source_records} records..."
+  sleep 2
+done
+
 # The CSV is the same alp aggregation as alp.txt, but is reliable to parse.
 while IFS=, read -r count one_xx two_xx three_xx four_xx five_xx method uri min max sum avg p90 p95 p99 stddev min_body max_body sum_body avg_body; do
-  selector="{service_name=\"nginx\"} | json | benchmark_run_id=\"${run_id}\" | method=\"${method}\" | uri=\"${uri}\""
+  selector="${run_selector} | method=\"${method}\" | uri=\"${uri}\""
   count_query="sum(count_over_time(${selector} [${range_seconds}s]))"
 
   printf '\n%s %s\n' "$method" "$uri"
