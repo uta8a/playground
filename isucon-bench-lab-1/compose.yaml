@@ -1,0 +1,21 @@
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/html:/usr/share/nginx/html:ro
+      - ./logs:/var/log/nginx
+
+  loadgen:
+    build:
+      context: ./bench
+    profiles: ["tools"]
+
+  alp:
+    build:
+      context: ./alp
+    profiles: ["tools"]
+    volumes:
+      - ./logs:/logs:ro
