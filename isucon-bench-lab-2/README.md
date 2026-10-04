@@ -60,6 +60,16 @@ results/<run-id>/
 
 Grafana の time range は benchmark 実施時刻を含めてください。alp と同じ server-side 値を表示するため、`response_time` は秒、`body_bytes` は bytes です。`ab.txt` / `percentile.csv` の client-side latency とは直接一致しません。
 
+### alp と Loki の集計一致チェック
+
+Collector が Loki へ転送し終えた後、run ID を指定して実行します。
+
+```bash
+./scripts/check-alp-loki.sh 20261004T015834Z
+```
+
+スクリプトは `results/<run-id>/access.log` と、Grafana が読む Loki から取得した同じ run ID のログを、それぞれ alp CSV で集計します。COUNT、ステータス別件数、latency、body bytes を含む CSV が完全一致した場合だけ成功します。既定では直近 5 分を Loki に問い合わせます。過去 run を検証する場合や転送遅延がある場合は、nanoseconds の `LOKI_START_NS` と `LOKI_END_NS` で問い合わせ期間を広げてください。
+
 ## Notes
 
 `ab` と alp が示す遅延は同じではありません。`ab` はクライアントから見た待ち時間、alp は nginx の `$request_time`（JSON log 上では `response_time`）を集計します。この差分も性能調査の対象として残します。
