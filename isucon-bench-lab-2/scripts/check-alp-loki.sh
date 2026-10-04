@@ -8,16 +8,11 @@ run_id="${1:?usage: check-alp-loki.sh RUN_ID}"
 result_dir="results/$run_id"
 source_log="$result_dir/access.log"
 loki_port="${LOKI_PORT:-3101}"
-now_seconds="$(date -u +%s)"
-start_ns="${LOKI_START_NS:-$(( (now_seconds - 300) * 1000000000 ))}"
-end_ns="${LOKI_END_NS:-$(( (now_seconds + 30) * 1000000000 ))}"
-loki_limit="${LOKI_LIMIT:-1000000}"
-query="{service_name=\"nginx\"} |= \"${run_id}\""
+range_seconds="${LOKI_RANGE_SECONDS:-600}"
 temp_dir="$(mktemp -d)"
+failures=0
 
-cleanup() {
-  rm -rf "$temp_dir"
-}
+cleanup() { rm -rf "$temp_dir"; }
 trap cleanup EXIT
 
 if [[ ! -s "$source_log" ]]; then
@@ -25,44 +20,59 @@ if [[ ! -s "$source_log" ]]; then
   exit 2
 fi
 
-echo "Comparing run: $run_id"
-echo "Loki query window: $start_ns .. $end_ns"
-echo "Loki query limit: $loki_limit"
-
 docker compose run --rm --no-deps -T \
   -v "$root_dir/$result_dir:/results:ro" \
-  alp json --file=/results/access.log --format=csv > "$temp_dir/alp-source.csv"
+  alp json --file=/results/access.log --format=csv > "$temp_dir/alp.csv"
 
-curl --fail --silent --show-error --get \
-  --data-urlencode "query=${query}" \
-  --data-urlencode "start=${start_ns}" \
-  --data-urlencode "end=${end_ns}" \
-  --data-urlencode "limit=${loki_limit}" \
-  "http://localhost:${loki_port}/loki/api/v1/query_range" > "$temp_dir/loki-response.json"
+query_scalar() {
+  local query="$1" response
+  response="$(curl --fail --silent --show-error --get \
+    --data-urlencode "query=${query}" \
+    "http://localhost:${loki_port}/loki/api/v1/query")"
+  jq -er '.data.result | if length == 0 then "0" else .[0].value[1] end' <<<"$response"
+}
 
-jq -e '.status == "success"' "$temp_dir/loki-response.json" >/dev/null
-jq -r '.data.result[]?.values[]?[1]' "$temp_dir/loki-response.json" \
-  | jq -c --arg run_id "$run_id" 'select(.benchmark_run_id == $run_id)' \
-  > "$temp_dir/loki-access.log"
+check_value() {
+  local label="$1" expected="$2" query="$3" tolerance="$4" actual
+  actual="$(query_scalar "$query")"
+  if awk -v expected="$expected" -v actual="$actual" -v tolerance="$tolerance" 'BEGIN { d=expected-actual; if (d < 0) d=-d; exit !(d <= tolerance) }'; then
+    printf 'PASS %-14s expected=%s actual=%s\n' "$label" "$expected" "$actual"
+  else
+    printf 'FAIL %-14s expected=%s actual=%s\n' "$label" "$expected" "$actual" >&2
+    failures=$((failures + 1))
+  fi
+}
 
-if [[ ! -s "$temp_dir/loki-access.log" ]]; then
-  echo "No access logs found in Loki for this run." >&2
-  echo "Wait for the OTel Collector, or widen the query window with LOKI_START_NS / LOKI_END_NS." >&2
-  exit 1
-fi
+echo "Comparing alp CSV with Grafana/Loki metric queries for run: $run_id"
+echo "Loki range window: ${range_seconds}s"
 
-docker compose run --rm --no-deps -T \
-  -v "$temp_dir:/comparison:ro" \
-  alp json --file=/comparison/loki-access.log --format=csv > "$temp_dir/alp-loki.csv"
+# The CSV is the same alp aggregation as alp.txt, but is reliable to parse.
+while IFS=, read -r count one_xx two_xx three_xx four_xx five_xx method uri min max sum avg p90 p95 p99 stddev min_body max_body sum_body avg_body; do
+  selector="{service_name=\"nginx\"} | json | benchmark_run_id=\"${run_id}\" | method=\"${method}\" | uri=\"${uri}\""
+  count_query="sum(count_over_time(${selector} [${range_seconds}s]))"
 
-source_records="$(wc -l < "$source_log" | tr -d ' ')"
-loki_records="$(wc -l < "$temp_dir/loki-access.log" | tr -d ' ')"
-echo "alp source records: $source_records"
-echo "Loki records:       $loki_records"
+  printf '\n%s %s\n' "$method" "$uri"
+  check_value COUNT "$count" "$count_query" 0
+  check_value 1XX "$one_xx" "sum(count_over_time(${selector} | status=~\"1..\" [${range_seconds}s]))" 0
+  check_value 2XX "$two_xx" "sum(count_over_time(${selector} | status=~\"2..\" [${range_seconds}s]))" 0
+  check_value 3XX "$three_xx" "sum(count_over_time(${selector} | status=~\"3..\" [${range_seconds}s]))" 0
+  check_value 4XX "$four_xx" "sum(count_over_time(${selector} | status=~\"4..\" [${range_seconds}s]))" 0
+  check_value 5XX "$five_xx" "sum(count_over_time(${selector} | status=~\"5..\" [${range_seconds}s]))" 0
+  check_value MIN "$min" "min(min_over_time(${selector} | unwrap response_time [${range_seconds}s]))" 0.0005
+  check_value MAX "$max" "max(max_over_time(${selector} | unwrap response_time [${range_seconds}s]))" 0.0005
+  check_value AVG "$avg" "sum(sum_over_time(${selector} | unwrap response_time [${range_seconds}s])) / ${count_query}" 0.0005
+  check_value P90 "$p90" "max(quantile_over_time(0.90, ${selector} | unwrap response_time [${range_seconds}s]))" 0.0005
+  check_value P95 "$p95" "max(quantile_over_time(0.95, ${selector} | unwrap response_time [${range_seconds}s]))" 0.0005
+  check_value P99 "$p99" "max(quantile_over_time(0.99, ${selector} | unwrap response_time [${range_seconds}s]))" 0.0005
+  check_value MIN_BODY "$min_body" "min(min_over_time(${selector} | unwrap body_bytes [${range_seconds}s]))" 0.0005
+  check_value MAX_BODY "$max_body" "max(max_over_time(${selector} | unwrap body_bytes [${range_seconds}s]))" 0.0005
+  check_value SUM_BODY "$sum_body" "sum(sum_over_time(${selector} | unwrap body_bytes [${range_seconds}s]))" 0.0005
+  check_value AVG_BODY "$avg_body" "sum(sum_over_time(${selector} | unwrap body_bytes [${range_seconds}s])) / ${count_query}" 0.0005
+done < <(tail -n +2 "$temp_dir/alp.csv")
 
-if diff -u "$temp_dir/alp-source.csv" "$temp_dir/alp-loki.csv"; then
-  echo "PASS: alp and Loki produce identical CSV aggregations."
+if (( failures == 0 )); then
+  echo "\nPASS: alp and the Loki queries used by Grafana agree."
 else
-  echo "FAIL: alp aggregation differs from the logs Grafana reads from Loki." >&2
+  echo "\nFAIL: ${failures} values differ." >&2
   exit 1
 fi

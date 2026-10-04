@@ -68,9 +68,9 @@ Collector が Loki へ転送し終えた後、run ID を指定して実行しま
 ./scripts/check-alp-loki.sh 20261004T015834Z
 ```
 
-スクリプトは `results/<run-id>/access.log` と、Grafana が読む Loki から取得した同じ run ID のログを、それぞれ alp CSV で集計します。COUNT、ステータス別件数、latency、body bytes を含む CSV が完全一致した場合だけ成功します。既定では直近 5 分を Loki に問い合わせます。過去 run を検証する場合や転送遅延がある場合は、nanoseconds の `LOKI_START_NS` と `LOKI_END_NS` で問い合わせ期間を広げてください。
+スクリプトは `access.log` を alp CSV で集計し、Grafana dashboard と同じ Loki/LogQL のメトリクス集計 API へ問い合わせます。COUNT、各 HTTP ステータス帯、MIN/MAX/AVG/p90/p95/p99 latency、body bytes を比較します。数値は alp の小数第3位表示に合わせ、latency は 0.0005 秒の許容差を持たせます。
 
-Loki の API は既定で 100 件しか返さないため、スクリプトは `limit=1000000` を指定します。Collector や Loki の上限を低く設定している場合は、`LOKI_LIMIT` に benchmark のリクエスト数以上を指定してください。
+生ログの `query_range` 取得には件数上限があるため使用しません。既定では直近 10 分の LogQL range vector を使います。Collector 転送が遅れた場合は `LOKI_RANGE_SECONDS=1800` のように時間窓を広げて再実行してください。
 
 ## Notes
 
