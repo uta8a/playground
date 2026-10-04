@@ -70,7 +70,7 @@ Collector が Loki へ転送し終えた後、run ID を指定して実行しま
 
 スクリプトは `access.log` を alp CSV で集計し、Grafana dashboard と同じ Loki/LogQL のメトリクス集計 API へ問い合わせます。COUNT、各 HTTP ステータス帯、MIN/MAX/AVG/p90/p95/p99 latency、body bytes を比較します。数値は alp の小数第3位表示に合わせ、latency は 0.0005 秒の許容差を持たせます。
 
-生ログの `query_range` 取得には件数上限があるため使用しません。既定では直近 10 分の LogQL range vector を使います。スクリプトは Collector が全ログを Loki へ転送するまで最大 60 秒待機します。転送に時間が掛かる場合は `LOKI_WAIT_SECONDS=180`、時間窓が足りない場合は `LOKI_RANGE_SECONDS=1800` を指定して再実行してください。
+生ログの `query_range` 取得には件数上限があるため使用しません。LogQL の時間窓は run ID の UTC 時刻を起点に既定10分間とするため、過去 run も検証できます。スクリプトは Collector が全ログを Loki へ転送するまで最大 60 秒待機します。転送に時間が掛かる場合は `LOKI_WAIT_SECONDS=180`、時間窓が足りない場合は `LOKI_RANGE_SECONDS=1800` を指定して再実行してください。
 
 ## Notes
 

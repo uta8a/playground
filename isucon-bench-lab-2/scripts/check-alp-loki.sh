@@ -21,6 +21,16 @@ if [[ ! -s "$source_log" ]]; then
   exit 2
 fi
 
+if run_epoch="$(date -j -u -f '%Y%m%dT%H%M%SZ' "$run_id" +%s 2>/dev/null)"; then
+  :
+elif run_epoch="$(date -u -d "$run_id" +%s 2>/dev/null)"; then
+  :
+else
+  echo "RUN_ID must be in YYYYMMDDTHHMMSSZ format: $run_id" >&2
+  exit 2
+fi
+query_time=$(( run_epoch + range_seconds ))
+
 docker compose run --rm --no-deps -T \
   -v "$root_dir/$result_dir:/results:ro" \
   alp json --file=/results/access.log --format=csv > "$temp_dir/alp.csv"
@@ -29,6 +39,7 @@ query_scalar() {
   local query="$1" response
   response="$(curl --fail --silent --show-error --get \
     --data-urlencode "query=${query}" \
+    --data-urlencode "time=${query_time}" \
     "http://localhost:${loki_port}/loki/api/v1/query")"
   jq -er '.data.result | if length == 0 then "0" else .[0].value[1] end' <<<"$response"
 }
@@ -45,7 +56,7 @@ check_value() {
 }
 
 echo "Comparing alp CSV with Grafana/Loki metric queries for run: $run_id"
-echo "Loki range window: ${range_seconds}s"
+echo "Loki range window: ${run_epoch} .. ${query_time} (UTC epoch seconds)"
 
 source_records="$(wc -l < "$source_log" | tr -d ' ')"
 run_selector="{service_name=\"nginx\"} | json | benchmark_run_id=\"${run_id}\""
