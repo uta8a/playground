@@ -1,0 +1,37 @@
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "${NGINX_PORT:-8081}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/html:/usr/share/nginx/html:ro
+      - ./logs:/var/log/nginx
+
+  loadgen:
+    build:
+      context: ./bench
+    profiles: ["tools"]
+
+  alp:
+    build:
+      context: ./alp
+    profiles: ["tools"]
+    volumes:
+      - ./logs:/logs:ro
+
+  otel-agent:
+    image: otel/opentelemetry-collector-contrib:0.118.0
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    depends_on:
+      - nginx
+      - lgtm
+    volumes:
+      - ./otel/collector.yaml:/etc/otelcol-contrib/config.yaml:ro
+      - ./logs:/var/log/nginx:ro
+
+  lgtm:
+    image: grafana/otel-lgtm:latest
+    ports:
+      - "${GRAFANA_PORT:-3001}:3000"
+      - "${LOKI_PORT:-3101}:3100"

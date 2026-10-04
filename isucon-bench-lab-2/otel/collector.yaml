@@ -1,0 +1,40 @@
+receivers:
+  filelog/nginx:
+    include:
+      - /var/log/nginx/access.log
+    start_at: beginning
+    include_file_path: true
+    operators:
+      - type: json_parser
+        parse_from: body
+        parse_to: attributes
+        timestamp:
+          parse_from: attributes.time
+          layout: '%Y-%m-%dT%H:%M:%S%z'
+      - type: add
+        field: resource["service.name"]
+        value: nginx
+
+  nginx:
+    endpoint: http://nginx/status
+    collection_interval: 5s
+
+processors:
+  batch:
+
+exporters:
+  otlp:
+    endpoint: lgtm:4317
+    tls:
+      insecure: true
+
+service:
+  pipelines:
+    logs:
+      receivers: [filelog/nginx]
+      processors: [batch]
+      exporters: [otlp]
+    metrics:
+      receivers: [nginx]
+      processors: [batch]
+      exporters: [otlp]

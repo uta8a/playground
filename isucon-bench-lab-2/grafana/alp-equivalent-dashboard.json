@@ -1,0 +1,123 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_LOKI",
+      "label": "Loki",
+      "description": "Select the Loki datasource that receives the OTel logs.",
+      "type": "datasource",
+      "pluginId": "loki",
+      "pluginName": "Loki"
+    }
+  ],
+  "annotations": { "list": [] },
+  "description": "alp の JSON 集計と同じ nginx access log を Loki から run ID ごとに確認するための dashboard。response_time と body_bytes は nginx 側の値です。",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "alp の COUNT / 2XX / 4XX / 5XX に対応します。run ID のない readiness probe は除外されます。",
+      "fieldConfig": { "defaults": { "custom": { "align": "auto", "cellOptions": { "type": "auto" }, "inspect": false } }, "overrides": [] },
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 0 },
+      "options": { "cellHeight": "sm", "showHeader": true },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        { "direction": "backward", "editorMode": "code", "expr": "sum by (method, uri) (count_over_time({service_name=\"nginx\"} | json | benchmark_run_id=\"${benchmark_run_id}\" [$__range]))", "instant": true, "legendFormat": "COUNT", "queryType": "instant", "refId": "A" },
+        { "direction": "backward", "editorMode": "code", "expr": "sum by (method, uri) (count_over_time({service_name=\"nginx\"} | json | benchmark_run_id=\"${benchmark_run_id}\" | status=~\"2..\" [$__range]))", "instant": true, "legendFormat": "2XX", "queryType": "instant", "refId": "B" },
+        { "direction": "backward", "editorMode": "code", "expr": "sum by (method, uri) (count_over_time({service_name=\"nginx\"} | json | benchmark_run_id=\"${benchmark_run_id}\" | status=~\"4..\" [$__range]))", "instant": true, "legendFormat": "4XX", "queryType": "instant", "refId": "C" },
+        { "direction": "backward", "editorMode": "code", "expr": "sum by (method, uri) (count_over_time({service_name=\"nginx\"} | json | benchmark_run_id=\"${benchmark_run_id}\" | status=~\"5..\" [$__range]))", "instant": true, "legendFormat": "5XX", "queryType": "instant", "refId": "D" }
+      ],
+      "title": "Requests by URI",
+      "transformations": [
+        { "id": "labelsToFields", "options": { "keepLabels": ["method", "uri"] } },
+        { "id": "merge", "options": {} },
+        { "id": "organize", "options": { "excludeByName": { "Time": true }, "renameByName": { "Value #A": "COUNT", "Value #B": "2XX", "Value #C": "4XX", "Value #D": "5XX" } } }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "alp の MIN / MAX / AVG / P90 / P95 / P99 に対応する nginx $request_time（秒）です。",
+      "fieldConfig": { "defaults": { "decimals": 6, "unit": "s", "custom": { "align": "auto", "cellOptions": { "type": "auto" }, "inspect": false } }, "overrides": [] },
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 0 },
+      "options": { "cellHeight": "sm", "showHeader": true },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        { "direction": "backward", "editorMode": "code", "expr": "min by (method, uri) (min_over_time({service_name=\"nginx\"} | json | benchmark_run_id=\"${benchmark_run_id}\" | unwrap response_time [$__range]))", "instant": true, "legendFormat": "MIN", "queryType": "instant", "refId": "A" },
+        { "direction": "backward", "editorMode": "code", "expr": "max by (method, uri) (max_over_time({service_name=\"nginx\"} | json | benchmark_run_id=\"${benchmark_run_id}\" | unwrap response_time [$__range]))", "instant": true, "legendFormat": "MAX", "queryType": "instant", "refId": "B" },
+        { "direction": "backward", "editorMode": "code", "expr": "avg by (method, uri) (avg_over_time({service_name=\"nginx\"} | json | benchmark_run_id=\"${benchmark_run_id}\" | unwrap response_time [$__range]))", "instant": true, "legendFormat": "AVG", "queryType": "instant", "refId": "C" },
+        { "direction": "backward", "editorMode": "code", "expr": "max by (method, uri) (quantile_over_time(0.90, {service_name=\"nginx\"} | json | benchmark_run_id=\"${benchmark_run_id}\" | unwrap response_time [$__range]))", "instant": true, "legendFormat": "P90", "queryType": "instant", "refId": "D" },
+        { "direction": "backward", "editorMode": "code", "expr": "max by (method, uri) (quantile_over_time(0.95, {service_name=\"nginx\"} | json | benchmark_run_id=\"${benchmark_run_id}\" | unwrap response_time [$__range]))", "instant": true, "legendFormat": "P95", "queryType": "instant", "refId": "E" },
+        { "direction": "backward", "editorMode": "code", "expr": "max by (method, uri) (quantile_over_time(0.99, {service_name=\"nginx\"} | json | benchmark_run_id=\"${benchmark_run_id}\" | unwrap response_time [$__range]))", "instant": true, "legendFormat": "P99", "queryType": "instant", "refId": "F" }
+      ],
+      "title": "Server latency by URI",
+      "transformations": [
+        { "id": "labelsToFields", "options": { "keepLabels": ["method", "uri"] } },
+        { "id": "merge", "options": {} },
+        { "id": "organize", "options": { "excludeByName": { "Time": true }, "renameByName": { "Value #A": "MIN", "Value #B": "MAX", "Value #C": "AVG", "Value #D": "P90", "Value #E": "P95", "Value #F": "P99" } } }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "alp の MIN(BODY) / MAX(BODY) / SUM(BODY) / AVG(BODY) に対応します。",
+      "fieldConfig": { "defaults": { "decimals": 0, "unit": "bytes", "custom": { "align": "auto", "cellOptions": { "type": "auto" }, "inspect": false } }, "overrides": [] },
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 10 },
+      "options": { "cellHeight": "sm", "showHeader": true },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        { "direction": "backward", "editorMode": "code", "expr": "min by (method, uri) (min_over_time({service_name=\"nginx\"} | json | benchmark_run_id=\"${benchmark_run_id}\" | unwrap body_bytes [$__range]))", "instant": true, "legendFormat": "MIN(BODY)", "queryType": "instant", "refId": "A" },
+        { "direction": "backward", "editorMode": "code", "expr": "max by (method, uri) (max_over_time({service_name=\"nginx\"} | json | benchmark_run_id=\"${benchmark_run_id}\" | unwrap body_bytes [$__range]))", "instant": true, "legendFormat": "MAX(BODY)", "queryType": "instant", "refId": "B" },
+        { "direction": "backward", "editorMode": "code", "expr": "sum by (method, uri) (sum_over_time({service_name=\"nginx\"} | json | benchmark_run_id=\"${benchmark_run_id}\" | unwrap body_bytes [$__range]))", "instant": true, "legendFormat": "SUM(BODY)", "queryType": "instant", "refId": "C" },
+        { "direction": "backward", "editorMode": "code", "expr": "avg by (method, uri) (avg_over_time({service_name=\"nginx\"} | json | benchmark_run_id=\"${benchmark_run_id}\" | unwrap body_bytes [$__range]))", "instant": true, "legendFormat": "AVG(BODY)", "queryType": "instant", "refId": "D" }
+      ],
+      "title": "Response body by URI",
+      "transformations": [
+        { "id": "labelsToFields", "options": { "keepLabels": ["method", "uri"] } },
+        { "id": "merge", "options": {} },
+        { "id": "organize", "options": { "excludeByName": { "Time": true }, "renameByName": { "Value #A": "MIN(BODY)", "Value #B": "MAX(BODY)", "Value #C": "SUM(BODY)", "Value #D": "AVG(BODY)" } } }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "alp の入力と同じ benchmark run ID の生ログです。集計値の根拠を確認できます。",
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 10 },
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "prettifyJSON": true, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "targets": [
+        { "direction": "backward", "editorMode": "code", "expr": "{service_name=\"nginx\"} | json | benchmark_run_id=\"${benchmark_run_id}\"", "queryType": "range", "refId": "A" }
+      ],
+      "title": "Access logs for this run",
+      "type": "logs"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 39,
+  "tags": ["isucon", "benchmark", "alp", "opentelemetry", "loki"],
+  "templating": {
+    "list": [
+      {
+        "current": { "selected": false, "text": "", "value": "" },
+        "description": "results/<run-id>/otel-verify.txt に記録された run ID を入力します。",
+        "hide": 0,
+        "label": "Benchmark run ID",
+        "name": "benchmark_run_id",
+        "options": [],
+        "query": "",
+        "skipUrlSync": false,
+        "type": "textbox"
+      }
+    ]
+  },
+  "time": { "from": "now-5m", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "ISUCON Bench Lab — alp equivalent",
+  "uid": "isucon-bench-alp-equivalent",
+  "version": 1,
+  "weekStart": ""
+}
