@@ -70,6 +70,8 @@ Collector が Loki へ転送し終えた後、run ID を指定して実行しま
 
 スクリプトは `results/<run-id>/access.log` と、Grafana が読む Loki から取得した同じ run ID のログを、それぞれ alp CSV で集計します。COUNT、ステータス別件数、latency、body bytes を含む CSV が完全一致した場合だけ成功します。既定では直近 5 分を Loki に問い合わせます。過去 run を検証する場合や転送遅延がある場合は、nanoseconds の `LOKI_START_NS` と `LOKI_END_NS` で問い合わせ期間を広げてください。
 
+Loki の API は既定で 100 件しか返さないため、スクリプトは `limit=1000000` を指定します。Collector や Loki の上限を低く設定している場合は、`LOKI_LIMIT` に benchmark のリクエスト数以上を指定してください。
+
 ## Notes
 
 `ab` と alp が示す遅延は同じではありません。`ab` はクライアントから見た待ち時間、alp は nginx の `$request_time`（JSON log 上では `response_time`）を集計します。この差分も性能調査の対象として残します。

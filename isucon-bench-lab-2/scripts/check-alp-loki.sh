@@ -11,6 +11,7 @@ loki_port="${LOKI_PORT:-3101}"
 now_seconds="$(date -u +%s)"
 start_ns="${LOKI_START_NS:-$(( (now_seconds - 300) * 1000000000 ))}"
 end_ns="${LOKI_END_NS:-$(( (now_seconds + 30) * 1000000000 ))}"
+loki_limit="${LOKI_LIMIT:-1000000}"
 query="{service_name=\"nginx\"} |= \"${run_id}\""
 temp_dir="$(mktemp -d)"
 
@@ -26,6 +27,7 @@ fi
 
 echo "Comparing run: $run_id"
 echo "Loki query window: $start_ns .. $end_ns"
+echo "Loki query limit: $loki_limit"
 
 docker compose run --rm --no-deps -T \
   -v "$root_dir/$result_dir:/results:ro" \
@@ -35,6 +37,7 @@ curl --fail --silent --show-error --get \
   --data-urlencode "query=${query}" \
   --data-urlencode "start=${start_ns}" \
   --data-urlencode "end=${end_ns}" \
+  --data-urlencode "limit=${loki_limit}" \
   "http://localhost:${loki_port}/loki/api/v1/query_range" > "$temp_dir/loki-response.json"
 
 jq -e '.status == "success"' "$temp_dir/loki-response.json" >/dev/null
